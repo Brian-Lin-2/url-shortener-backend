@@ -18,10 +18,13 @@ app.post('/register', (req, res) => {
   const sql = "INSERT INTO `user-database`.`login` (`email`, `password`) VALUES (?, ?)";
 
   // req is in array format from user form.
-  const email = req.body[0];
-  const password = req.body[1];
+  const data = {
+    name: req.body[0],
+    email: req.body[1],
+    password: req.body[2],
+  }
 
-  db.query(sql, [email, password], (error, result) => {
+  db.query(sql, [data], (error, result) => {
     if (result) {
       res.send(result);
     } else {
@@ -34,10 +37,12 @@ app.post('/login', (req, res) => {
   const sql = "SELECT * FROM `user-database`.`login` WHERE `email` = ? AND `password` = ?";
 
   // req is in array format from user form.
-  const email = req.body[0];
-  const password = req.body[1];
+  const data = {
+    email: req.body[0],
+    password: req.body[1],
+  }
 
-  db.query(sql, [email, password], (error, result) => {
+  db.query(sql, [data], (error, result) => {
     if (result.length > 0) {
       res.send(result);
     } else {
