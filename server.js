@@ -17,14 +17,7 @@ const db = mysql.createConnection({
 app.post('/register', (req, res) => {
   const sql = "INSERT INTO `user-database`.`login` (`email`, `password`) VALUES (?, ?)";
 
-  // req is in array format from user form.
-  const data = {
-    name: req.body[0],
-    email: req.body[1],
-    password: req.body[2],
-  }
-
-  db.query(sql, [data], (error, result) => {
+  db.query(sql, [req.body.email, req.body.password], (error, result) => {
     if (result) {
       res.send(result);
     } else {
@@ -36,17 +29,12 @@ app.post('/register', (req, res) => {
 app.post('/login', (req, res) => {
   const sql = "SELECT * FROM `user-database`.`login` WHERE `email` = ? AND `password` = ?";
 
-  // req is in array format from user form.
-  const data = {
-    email: req.body[0],
-    password: req.body[1],
-  }
-
-  db.query(sql, [data], (error, result) => {
+  db.query(sql, [req.body.email, req.body.password], (error, result) => {
+    // Returns an array [email, password].
     if (result.length > 0) {
-      res.send(result);
+      res.send(true);
     } else {
-      res.send({ message: "Invalid Email/Password" });
+      res.send(false);
     }
   });
 })
