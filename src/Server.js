@@ -9,7 +9,7 @@ app.use(cors());
 
 const db = mysql.createConnection({
   user: "root",
-  host: "127.0.0.1",
+  host: "https://url-shortener-backend-maf5.onrender.com",
   password: "root",
   database: "user-database",
 })
