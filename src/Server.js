@@ -8,14 +8,14 @@ app.use(express.json());
 app.use(cors());
 
 const db = mysql.createConnection({
-  user: "root",
-  host: "https://url-shortener-backend-maf5.onrender.com",
-  password: "root",
-  database: "user-database",
+  user: "sql9644253",
+  host: "sql9.freesqldatabase.com",
+  password: "XMtrn6UtWz",
+  database: "sql9644253",
 })
 
 app.post('/register', (req, res) => {
-  const sql = "INSERT INTO `user-database`.`login` (`email`, `password`) VALUES (?, ?)";
+  const sql = "INSERT INTO `sql9644253`.`login` (`email`, `password`) VALUES (?, ?)";
 
   db.query(sql, [req.body.email, req.body.password], (error, result) => {
     if (result) {
@@ -27,7 +27,7 @@ app.post('/register', (req, res) => {
 })
 
 app.post('/login', (req, res) => {
-  const sql = "SELECT * FROM `user-database`.`login` WHERE `email` = ? AND `password` = ?";
+  const sql = "SELECT * FROM `sql9644253`.`login` WHERE `email` = ? AND `password` = ?";
 
   db.query(sql, [req.body.email, req.body.password], (error, result) => {
     // Returns an array [email, password].
