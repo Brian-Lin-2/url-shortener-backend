@@ -55,9 +55,7 @@ app.post('/add', (req, res) => {
   if (req.body.links) {
     const sql = "UPDATE `user-database`.`login` SET `links` = ? WHERE `email` = ?";
     db.query(sql, [req.body.links, req.body.email], (error, result) => {
-      if (result) {
-        console.log(req.body);
-      } else {
+      if (error) {
         console.log(error);
       }
     });
