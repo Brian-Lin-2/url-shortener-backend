@@ -26,10 +26,10 @@ app.post('/register', (req, res) => {
   });
 });
 
-app.post('/login', (req, res) => {
+app.get('/login', (req, res) => {
   const sql = "SELECT email, password FROM `user-database`.`login` WHERE `email` = ? AND `password` = ?";
 
-  db.query(sql, [req.body.email, req.body.password], (error, result) => {
+  db.query(sql, [req.query.email, req.query.password], (error, result) => {
     // Returns an array [email, password].
     if (result.length > 0) {
       res.send(true);
