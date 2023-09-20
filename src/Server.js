@@ -8,14 +8,14 @@ app.use(express.json());
 app.use(cors());
 
 const db = mysql.createConnection({
-  user: "sql9644253",
-  host: "sql9.freesqldatabase.com",
-  password: "XMtrn6UtWz",
-  database: "sql9644253",
+  user: "root",
+  host: "127.0.0.1",
+  password: "root",
+  database: "user-database",
 })
 
 app.post('/register', (req, res) => {
-  const sql = "INSERT INTO `sql9644253`.`login` (`email`, `password`) VALUES (?, ?)";
+  const sql = "INSERT INTO `user-database`.`login` (email, password) VALUES (?, ?)";
 
   db.query(sql, [req.body.email, req.body.password], (error, result) => {
     if (result) {
@@ -24,10 +24,10 @@ app.post('/register', (req, res) => {
       res.send({ message: "Email Is Taken" });
     }
   });
-})
+});
 
 app.post('/login', (req, res) => {
-  const sql = "SELECT * FROM `sql9644253`.`login` WHERE `email` = ? AND `password` = ?";
+  const sql = "SELECT email, password FROM `user-database`.`login` WHERE `email` = ? AND `password` = ?";
 
   db.query(sql, [req.body.email, req.body.password], (error, result) => {
     // Returns an array [email, password].
@@ -38,6 +38,31 @@ app.post('/login', (req, res) => {
     }
   });
 })
+
+app.get('/user',(req,res)=>{
+  const sql = "SELECT links FROM `user-database`.`login` WHERE `email` = ?";
+
+  db.query(sql, [req.query.email], (error, result) => {
+    if (result) {
+      res.send(result);
+    } else {
+      console.log(error);
+    }
+  });
+})
+
+app.post('/add', (req, res) => {
+  if (req.body.links) {
+    const sql = "UPDATE `user-database`.`login` SET `links` = ? WHERE `email` = ?";
+    db.query(sql, [req.body.links, req.body.email], (error, result) => {
+      if (result) {
+        console.log(req.body);
+      } else {
+        console.log(error);
+      }
+    });
+  } 
+});
 
 // Ensures the server is loaded.
 app.listen(3306, () => {
