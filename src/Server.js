@@ -13,7 +13,7 @@ app.post('/register', (req, res) => {
   async function register() {
     try {
       const data = await mongo.db().collection("info")
-        .insertOne({ email: req.body.email, password: req.body.password })
+        .insertOne({ email: req.body.email, password: req.body.password, links: "" })
 
       if (data) {
         res.send(data);
