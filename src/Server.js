@@ -1,5 +1,5 @@
 const express = require("express");
-const mysql = require("mysql");
+const { MongoClient } = require("mongodb");
 const cors = require("cors");
 
 const app = express();
@@ -7,69 +7,88 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-const db = mysql.createConnection({
-  user: "sql9648319",
-  host: "sql9.freesqldatabase.com",
-  password: "6fxjJyMLiA",
-  database: "sql9648319",
-})
+const mongo = new MongoClient("mongodb+srv://url-shortener:root@cluster0.ikvupbn.mongodb.net/info?retryWrites=true&w=majority");
 
 app.post('/register', (req, res) => {
-  const sql = "INSERT INTO `sql9648319`.`database` (email, password) VALUES (?, ?)";
+  async function register() {
+    try {
+      const data = await mongo.db().collection("info")
+        .insertOne({ email: req.body.email, password: req.body.password })
 
-  db.query(sql, [req.body.email, req.body.password], (error, result) => {
-    if (result) {
-      res.send(result);
-    } else {
-      res.send({ message: "Email Is Taken" });
+      if (data) {
+        res.send(data);
+      } else {
+        res.send({ message: "Email Is Taken" });
+      }
     }
-  });
+    catch (e) {
+      console.log(e);
+    }
+  }
+  register();
 });
 
 app.get('/login', (req, res) => {
-  const sql = "SELECT email, password FROM `sql9648319`.`database` WHERE `email` = ? AND `password` = ?";
+  async function login() {
+    try {
+      const data = mongo.db().collection("info")
+        .find({ email: req.query.email, password: req.query.password})
+        .toArray();
 
-  db.query(sql, [req.query.email, req.query.password], (error, result) => {
-    // Returns an array [email, password].
-    if (result.length > 0) {
-      res.send(true);
-    } else {
-      res.send(false);
+      if (data) {
+        res.send(true);
+      } else {
+        res.send(false);
+      }
     }
-  });
+    catch (e) {
+      console.log(e);
+    }
+  }
+  login();
 })
 
-app.get('/user',(req,res)=>{
-  const sql = "SELECT links FROM `sql9648319`.`database` WHERE `email` = ?";
+app.get('/user', (req, res)=>{
+  async function receive() {
+    try {
+      const data = await mongo.db().collection("info").find({ email: req.query.email }).toArray();
 
-  db.query(sql, [req.query.email], (error, result) => {
-    if (result) {
-      res.send(result);
-    } else {
-      console.log(error);
+      if (data) {
+        res.send(data);
+      }
     }
-  });
+    catch (e) {
+      console.log(e);
+    }
+  }
+  receive();
 })
 
 app.post('/add', (req, res) => {
+  async function add() {
+    try {
+      await mongo.db().collection("info")
+        .updateOne({ email: req.body.email }, { $set: { links: req.body.links }});
+    }
+    catch (e) {
+      console.log(e);
+    }
+  }
   if (req.body.links) {
-    const sql = "UPDATE `sql9648319`.`database` SET `links` = ? WHERE `email` = ?";
-    db.query(sql, [req.body.links, req.body.email], (error, result) => {
-      if (error) {
-        console.log(error);
-      }
-    });
+    add();
   } 
 });
 
 // Ensures the server is loaded.
 app.listen(3306, () => {
   console.log("running");
-  db.connect((err) => {
-    if (err) {
-      console.log(err);
-    } else {
-      console.log("loaded");
+  async function run() {
+    try {
+      await mongo.connect().then(() => console.log("loaded"));
     }
-  })
+    catch (e) {
+      console.log(e);
+    }
+  }
+  run();
 })
